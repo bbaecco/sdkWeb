@@ -28,23 +28,32 @@ def post_echo_call():
     return jsonify(param)
 
 #파일 업로드 처리
-# app.config['UPLOAD_FOLDER'] = './uploads'  #업로드된 파일 저장 경로
 # @app.route('/fileUpload')
-# def upload_file():
-#     if request.method == 'POST':
-#         f = request.files['file']
-#         #저장할 경로 + 파일명
-#         f.save(secure_filename(f.filename))
-#         return "result : ok"
+# def fileUpload():
+#     f = request.files['file']
+#     f.save('./uploads/' + secure_filename(f.filename))
+#     return 'success'
+#     print(f.filename)
+#     # return '', 200
 
-@app.route('/fileUpload')
-def fileUpload():
-    f = request.files['file']
-    f.save('./uploads/' + secure_filename(f.filename))
-    return 'success'
-    print(f.filename)
-    # return '', 200
 
+app.config['UPLOAD_FOLDER'] = './uploads/'
+
+@app.route('/upload', methods=['POST'])
+def Upload():
+    target = os.path.join(app.config['UPLOAD_FOLDER'], 'test')
+    if not os.path.isdir(target):
+        os.mkdir(target)
+    # logger.info("welcome to upload`")
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    if not file:
+        return "not file", 400
+    destination = "/".join([target, filename])
+    file.save(destination)
+    # session['uploadFilePath'] = destination
+    response = "success"
+    return response
 
 
 
